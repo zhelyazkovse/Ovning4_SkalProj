@@ -1,30 +1,149 @@
 ﻿using System;
-
+using System.Reflection.Metadata.Ecma335;
 namespace SkalProj_Datastrukturer_Minne
 {
     class Program
     {
-        /// <summary>
-        /// The main method, vill handle the menues for the program
-        /// </summary>
-        /// <param name="args"></param>
+        #region 1. Hur fungerar stacken och heapen?
+
+        /*
+         * Stacken (Last In - First Out, LIFO):
+         * Stacken fungerar som en stapel av lådor.
+         * Den sista som läggs på är den första som tas bort.
+         * Används för metodanrop och lokala variabler (Value Types).
+         * 
+         * Kodexempel - Stacken:
+         * 
+         * void StackExample()
+         * {
+         *     int a = 5;
+         *     int b = a;     // b får en kopia av a
+         *     b = 10;        // ändrar INTE a
+         * }
+         * 
+         * Heapen:
+         * Ett område där objekt (Reference Types) lagras och nås via referenser.
+         * Här sker Garbage Collection när minne inte längre används.
+         * 
+         * Kodexempel - Heapen:
+         * 
+         * class Person { public string Name; }
+         * 
+         * void HeapExample()
+         * {
+         *     Person p1 = new Person();
+         *     p1.Name = "Anna";
+         *     Person p2 = p1;
+         *     p2.Name = "Lisa"; // Ändrar även p1.Name!
+         * }
+         */
+
+        #endregion
+      #region 2. Vad är Value Types respektive Reference Types och vad skiljer dem åt?
+
+        /*
+         * Value Types lagras direkt på stacken och inkluderar:
+         * - Numeriska typer: byte, sbyte, short, ushort, int, uint, long, ulong
+         * - Flyttal: float, double, decimal
+         * - Övriga: char, bool, enum, struct
+         * 
+         * De kopieras vid tilldelning – varje variabel får sin egen kopia.
+         * 
+         * Reference Types lagras på heapen och inkluderar:
+         * - class
+         * - interface
+         * - delegate
+         * - array
+         * - string
+         * 
+         * Variabler innehåller en referens till objektet – flera variabler kan peka på samma data.
+         * 
+         * Skillnaden:
+         * - Value Types: oberoende kopior
+         * - Reference Types: flera referenser till samma objekt
+         */
+
+        #endregion
+        #region 3.  Följande metoder genererar olika svar, varför?
+
+        /*
+         * Exempel 1: Returnerar 3
+         * 
+         * int ReturnValue()
+         * {
+         *     int x = 3;
+         *     int y = x;
+         *     y = 4;
+         *     return x;
+         * }
+         * 
+         * x och y är Value Types. När y får värdet av x, skapas en kopia.
+         * Ändringen av y påverkar inte x. Därför returneras 3. Detta är varför.
+         * 
+         * Exempel 2: Returnerar 4
+         * 
+         * class MyInt { public int MyValue; }
+         * 
+         * int ReturnValue2()
+         * {
+         *     MyInt x = new MyInt();
+         *     x.MyValue = 3;
+         *     MyInt y = x;
+         *     y.MyValue = 4;
+         *     return x.MyValue;
+         * }
+         * 
+         * x och y är referenser till samma objekt i heapen.
+         * När y.MyValue ändras, syns det också via x. Därför returneras 4. Detta är varför.
+         */
+
+        #endregion
+      #region  4. Varför är det inte så smart att använda en stack i det här fallet?
+        /*
+         * En stack är inte lämplig för en ICA-kö eftersom den följer principen Först In Sist Ut(FILO).
+         * Det skulle innebära att den som kommer först får vänta längst, vilket är orättvist och ologiskt i en vanlig kö.
+         *
+         * Exempel:
+         * 
+         * Stack: [A, B, C]
+         * Dequeue: C
+         * Queue: [A, B]
+         *
+         * I en kö ska den som kom först(A) få gå först och inte den som kom sist(C).
+         */
+
+        #endregion
+        #region 5. Vilken metod är mest minnesvänlig och varför?
+
+        /*
+         * Iterativa funktioner är mer minnesvänliga än rekursiva.
+         * Rekursion skapar ett nytt stackframe för varje anrop vilket kan leda till hög minnesförbrukning och stack overflow.
+         * Iteration använder en loop och några få variabler vilket sparar minne.
+         * Därför är iteration oftast att föredra ur ett minnesperspektiv.
+         */
+
+        #endregion
+
         static void Main()
         {
 
             while (true)
             {
-                Console.WriteLine("Please navigate through the menu by inputting the number \n(1, 2, 3 ,4, 0) of your choice"
+                Console.WriteLine("Please navigate through the menu by entering the number \n(1, 2, 3 ,4, 5, 6, 0) of your choice"
                     + "\n1. Examine a List"
                     + "\n2. Examine a Queue"
                     + "\n3. Examine a Stack"
                     + "\n4. CheckParenthesis"
+                    + "\n5. Recursive Options"
+                    + "\n6. Iteration Options"
                     + "\n0. Exit the application");
-                char input = ' '; //Creates the character input to be used with the switch-case below.
+                char input = ' '; 
+
                 try
                 {
-                    input = Console.ReadLine()![0]; //Tries to set input to the first char in an input line
+                    input = Console.ReadLine()![0]; 
                 }
-                catch (IndexOutOfRangeException) //If the input line is empty, we ask the users for some input.
+                catch (IndexOutOfRangeException) 
                 {
                     Console.Clear();
                     Console.WriteLine("Please enter some input!");
@@ -32,88 +151,32 @@ namespace SkalProj_Datastrukturer_Minne
                 switch (input)
                 {
                     case '1':
-                        ExamineList();
+                        ListHandler.ExamineList();
                         break;
                     case '2':
-                        ExamineQueue();
+                        QueueHandler.ExamineQueue();
                         break;
                     case '3':
-                        ExamineStack();
+                        StackHandler.ExamineStack();
                         break;
                     case '4':
-                        CheckParanthesis();
+                        ParenthesisChecker.CheckParenthesis();
                         break;
-                    /*
-                     * Extend the menu to include the recursive 
-                     * and iterative exercises.
-                     */
+                    case '5':
+                        Recursions.RecursiveOptions();
+                        break;
+                    case '6':
+                        Iterations.IterationOptions();
+                        break;
                     case '0':
                         Environment.Exit(0);
                         break;
                     default:
-                        Console.WriteLine("Please enter some valid input (0, 1, 2, 3, 4)");
+                        Console.WriteLine("Please enter valid input (0, 1, 2, 3, 4, 5, 6)");
                         break;
                 }
             }
         }
-
-        /// <summary>
-        /// Examines the datastructure List
-        /// </summary>
-        static void ExamineList()
-        {
-            /*
-             * Loop this method untill the user inputs something to exit to main menue.
-             * Create a switch statement with cases '+' and '-'
-             * '+': Add the rest of the input to the list (The user could write +Adam and "Adam" would be added to the list)
-             * '-': Remove the rest of the input from the list (The user could write -Adam and "Adam" would be removed from the list)
-             * In both cases, look at the count and capacity of the list
-             * As a default case, tell them to use only + or -
-             * Below you can see some inspirational code to begin working.
-            */
-
-            //List<string> theList = new List<string>();
-            //string input = Console.ReadLine();
-            //char nav = input[0];
-            //string value = input.substring(1);
-
-            //switch(nav){...}
-        }
-
-        /// <summary>
-        /// Examines the datastructure Queue
-        /// </summary>
-        static void ExamineQueue()
-        {
-            /*
-             * Loop this method untill the user inputs something to exit to main menue.
-             * Create a switch with cases to enqueue items or dequeue items
-             * Make sure to look at the queue after Enqueueing and Dequeueing to see how it behaves
-            */
-        }
-
-        /// <summary>
-        /// Examines the datastructure Stack
-        /// </summary>
-        static void ExamineStack()
-        {
-            /*
-             * Loop this method until the user inputs something to exit to main menue.
-             * Create a switch with cases to push or pop items
-             * Make sure to look at the stack after pushing and and poping to see how it behaves
-            */
-        }
-
-        static void CheckParanthesis()
-        {
-            /*
-             * Use this method to check if the paranthesis in a string is Correct or incorrect.
-             * Example of correct: (()), {}, [({})],  List<int> list = new List<int>() { 1, 2, 3, 4 };
-             * Example of incorrect: (()]), [), {[()}],  List<int> list = new List<int>() { 1, 2, 3, 4 );
-             */
-
-        }
-
     }
 }
 
